@@ -21,6 +21,7 @@ class Game {
   state = 0;
   player: Player;
   entities: Entity[] = [];
+  map: string[];
   // Framerate independence using timestamps
   dt = 1; // initial value to 1
   constructor() {
@@ -30,6 +31,7 @@ class Game {
   }
   loadMap(map) {
     map = map.split('\n');
+    this.map = map;
     for (let y = 0; y < map.length; y++) {
       for (let x = 0; x < map[y].length; x++) {
         const tile = map[y][x];
@@ -45,7 +47,7 @@ class Game {
     for (let i = this.entities.length - 1; i >= 0; i--) {
       this.entities[i].draw(ctx);
     }
-    this.player.logic(ctx, this.entities, this.dt);
+    this.player.logic(ctx, this.entities, this.dt, this.map);
   }
 }
 export default Game;

@@ -13,29 +13,28 @@ class Player extends Entity {
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
   }
-  logic(ctx: CanvasRenderingContext2D, entities: Entity[], dt: number) {
+  logic(ctx: CanvasRenderingContext2D, entities: Entity[], dt: number, map: string[]) {
     this.draw(ctx);
     // Movements
     this.force.dx = 0;
     this.force.dy = 0;
-    const speed = 4;
+    const speed = 5;
     if (this.movement.up) this.force.dy -= speed;
     else if (this.movement.down) this.force.dy += speed;
     else if (this.movement.left) this.force.dx -= speed;
     else if (this.movement.right) this.force.dx += speed;
-    this.move(entities, dt);
+    this.move(entities, dt, map);
   }
-  move(entities: Entity[], dt: number) {
-    const collision = { top: false, left: false, bottom: false, right: false };
+  move(entities: Entity[], dt: number, map: string[]) {
     this.x += this.force.dx * dt;
     let hit_list = this.collisions(entities);
     for (const tile of hit_list) {
       if (this.force.dx > 0) {
         this.x = tile.x - this.width;
-        collision.right = true;
+        this.slide(map, 1, 0);
       } else if (this.force.dx < 0) {
         this.x = tile.x + this.width;
-        collision.left = true;
+        this.slide(map, -1, 0);
       }
     }
     this.y += this.force.dy * dt;
@@ -43,13 +42,20 @@ class Player extends Entity {
     for (const tile of hit_list) {
       if (this.force.dy > 0) {
         this.y = tile.y - this.height;
-        collision.bottom = true;
+        this.slide(map, 0, 1);
       } else if (this.force.dy < 0) {
         this.y = tile.y + tile.height;
-        collision.top = true;
+        this.slide(map, 0, -1);
       }
     }
-    return collision;
+  }
+  slide(map: string[], padx: number, pady: number) {
+    const x = Math.round(this.x / 32);
+    const y = Math.round(this.y / 32);
+    if (map[y + pady][x + padx] === '0') {
+      if (pady !== 0) this.x = x * 32;
+      else if (padx !== 0) this.y = y * 32;
+    }
   }
   collisions(entities: Entity[]) {
     const hit_list = [];
