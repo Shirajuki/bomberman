@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Game from '../logic/game';
+  import { TILE_SIZE } from '../constants';
   let canvas: HTMLCanvasElement;
   const game = new Game();
   const player = game.player;
@@ -11,6 +12,9 @@
     ctx.imageSmoothingEnabled = false;
     let frame: number; // AnimationFrame cancel on unmount / exit
     let secondsPassed: number, oldTimeStamp: number;
+    // Pad camera
+    ctx.translate(-Math.floor(TILE_SIZE / 3), -Math.floor(TILE_SIZE / 3));
+
     const gameLoop = (timeStamp: number) => {
       frame = requestAnimationFrame(gameLoop);
       // Calculate the number of seconds passed since the last frame
@@ -36,7 +40,7 @@
     else if (event.key === 'ArrowUp') player.movement.up = true;
     else if (event.key === 'ArrowLeft') player.movement.left = true;
     else if (event.key === 'ArrowDown') player.movement.down = true;
-    else if (event.key === 'Space') player.action.bomb = true;
+    else if (event.key === ' ') player.action.bomb = true;
     // event.preventDefault();
   };
   document.onkeyup = (event) => {
@@ -44,13 +48,13 @@
     else if (event.key === 'ArrowUp') player.movement.up = false;
     else if (event.key === 'ArrowLeft') player.movement.left = false;
     else if (event.key === 'ArrowDown') player.movement.down = false;
-    else if (event.key === 'Space') player.action.bomb = false;
+    else if (event.key === ' ') player.action.bomb = false;
     event.preventDefault();
   };
 </script>
 
 <div class="game">
-  <canvas bind:this={canvas} width={928} height={512} />
+  <canvas bind:this={canvas} width={928} height={517} />
 </div>
 
 <style>

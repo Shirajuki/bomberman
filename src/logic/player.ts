@@ -1,9 +1,12 @@
 import Entity from './entity';
+import { TILE_SIZE } from '../constants';
+import Bomb from './bomb';
 
 class Player extends Entity {
   movement = { left: false, up: false, right: false, down: false };
   force = { dx: 0, dy: 0 };
   action = { bomb: false };
+  speed = 3;
   constructor(x: number, y: number, width: number, height: number, color: string) {
     super(x, y, width, height, color);
   }
@@ -18,12 +21,20 @@ class Player extends Entity {
     // Movements
     this.force.dx = 0;
     this.force.dy = 0;
-    const speed = 5;
-    if (this.movement.up) this.force.dy -= speed;
-    else if (this.movement.down) this.force.dy += speed;
-    else if (this.movement.left) this.force.dx -= speed;
-    else if (this.movement.right) this.force.dx += speed;
+    if (this.movement.up) this.force.dy -= this.speed;
+    else if (this.movement.down) this.force.dy += this.speed;
+    else if (this.movement.left) this.force.dx -= this.speed;
+    else if (this.movement.right) this.force.dx += this.speed;
     this.move(entities, dt, map);
+
+    // Bomb logic
+    if (this.action.bomb) {
+      this.action.bomb = false;
+      const x = Math.round(this.x / TILE_SIZE) * TILE_SIZE;
+      const y = Math.round(this.y / TILE_SIZE) * TILE_SIZE;
+      console.log('bombing');
+      entities.push(new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'pink', 1));
+    }
   }
   move(entities: Entity[], dt: number, map: string[]) {
     this.x += this.force.dx * dt;
@@ -50,11 +61,11 @@ class Player extends Entity {
     }
   }
   slide(map: string[], padx: number, pady: number) {
-    const x = Math.round(this.x / 32);
-    const y = Math.round(this.y / 32);
+    const x = Math.round(this.x / TILE_SIZE);
+    const y = Math.round(this.y / TILE_SIZE);
     if (map[y + pady][x + padx] === '0') {
-      if (pady !== 0) this.x = x * 32;
-      else if (padx !== 0) this.y = y * 32;
+      if (pady !== 0) this.x = x * TILE_SIZE;
+      else if (padx !== 0) this.y = y * TILE_SIZE;
     }
   }
   collisions(entities: Entity[]) {
