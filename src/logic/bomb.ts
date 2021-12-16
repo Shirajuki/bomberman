@@ -43,17 +43,22 @@ class Bomb extends Entity {
     const TZ = TILE_SIZE;
     effects.push(new Explosion(this.posx * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner));
     for (let i = 1; i <= this.power; i++) {
-      const spawnpos = { up: this.posy + i, left: this.posx - i, down: this.posy - i, right: this.posx + i };
+      const spawnpos = {
+        up: Math.max(this.posy - i, 0),
+        left: Math.max(this.posx - i, 0),
+        down: Math.max(this.posy + i, 0),
+        right: Math.max(this.posx + i, 0),
+      };
       // Check for tiling
-      if (map[this.posy][this.posx + i] === '1') walled.right = true;
+      if (map[this.posy][spawnpos.right] === '1') walled.right = true;
       else if (!walled.right)
         effects.push(new Explosion(spawnpos.right * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[this.posy][this.posx - i] === '1') walled.left = true;
+      if (map[this.posy][spawnpos.left] === '1') walled.left = true;
       else if (!walled.left)
         effects.push(new Explosion(spawnpos.left * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[this.posy + i][this.posx] === '1') walled.up = true;
+      if (map[spawnpos.up][this.posx] === '1') walled.up = true;
       else if (!walled.up) effects.push(new Explosion(this.posx * TZ, spawnpos.up * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[this.posy - i][this.posx] === '1') walled.down = true;
+      if (map[spawnpos.down][this.posx] === '1') walled.down = true;
       else if (!walled.down)
         effects.push(new Explosion(this.posx * TZ, spawnpos.down * TZ, TZ, TZ, 'blue', this.owner));
     }
