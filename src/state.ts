@@ -13,3 +13,4 @@ const ref = (defaultValue) =>
 export const $entities = ref([]);
 export const $players = ref([]);
 export const $bombs = ref([]);
+export const $effects = ref([]);

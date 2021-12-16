@@ -9,6 +9,8 @@
   (window as any).game = game;
   onMount(() => {
     const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+    canvas.width = 928;
+    canvas.height = 517;
     ctx.imageSmoothingEnabled = false;
     let frame: number; // AnimationFrame cancel on unmount / exit
     let secondsPassed: number, oldTimeStamp: number;

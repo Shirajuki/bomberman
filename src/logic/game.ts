@@ -2,7 +2,8 @@ import Entity from './entity';
 import Player from './player';
 import { MAP, TILE_SIZE } from '../constants';
 import type Bomb from './bomb';
-import { $entities, $players, $bombs } from '../state';
+import type Explosion from './explosion';
+import { $entities, $players, $bombs, $effects } from '../state';
 
 class Game {
   state = 0;
@@ -10,6 +11,7 @@ class Game {
   entities: Entity[] = [];
   players: Player[] = [];
   bombs: Bomb[] = [];
+  effects: Explosion[] = [];
   map: string[];
   // Framerate independence using timestamps
   dt = 1; // initial value to 1
@@ -18,9 +20,12 @@ class Game {
     this.player = new Player(36, 36, TILE_SIZE, TILE_SIZE, 'red');
     this.players.push(this.player);
     this.loadMap(MAP);
+
+    // Set global game states
     $entities[0] = this.entities;
     $players[0] = this.players;
     $bombs[0] = this.bombs;
+    $effects[0] = this.effects;
   }
   loadMap(map) {
     map = map.split('\n');
@@ -44,7 +49,15 @@ class Game {
     for (let i = this.bombs.length - 1; i >= 0; i--) {
       this.bombs[i].draw(ctx);
       if (this.bombs[i].detonated) {
+        this.bombs[i].explode(this.effects, this.map);
         this.bombs.splice(i, 1);
+      }
+    }
+    // Effects
+    for (let i = this.effects.length - 1; i >= 0; i--) {
+      this.effects[i].draw(ctx);
+      if (this.effects[i].dissappear) {
+        this.effects.splice(i, 1);
       }
     }
     this.player.logic(ctx, this.entities, this.dt, this.map);
