@@ -1,12 +1,14 @@
 import Entity from './entity';
 import { TILE_SIZE } from '../constants';
 import Bomb from './bomb';
+import { $bombs } from '../state';
 
 class Player extends Entity {
   movement = { left: false, up: false, right: false, down: false };
   force = { dx: 0, dy: 0 };
   action = { bomb: false };
   speed = 3;
+  name = 'Player';
   constructor(x: number, y: number, width: number, height: number, color: string) {
     super(x, y, width, height, color);
   }
@@ -33,7 +35,8 @@ class Player extends Entity {
       const x = Math.round(this.x / TILE_SIZE) * TILE_SIZE;
       const y = Math.round(this.y / TILE_SIZE) * TILE_SIZE;
       console.log('bombing');
-      entities.push(new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'pink', 1));
+      const bomb = new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'deeppink', 1);
+      $bombs[0].push(bomb);
     }
   }
   move(entities: Entity[], dt: number, map: string[]) {
@@ -64,17 +67,26 @@ class Player extends Entity {
     const x = Math.round(this.x / TILE_SIZE);
     const y = Math.round(this.y / TILE_SIZE);
     if (map[y + pady][x + padx] === '0') {
+      for (const bomb of $bombs[0]) {
+        if (this.absoluteCollision(bomb, pady !== 0 ? x * TILE_SIZE : this.x, padx !== 0 ? y * TILE_SIZE : this.y))
+          return;
+      }
+      console.log(pady, padx);
       if (pady !== 0) this.x = x * TILE_SIZE;
       else if (padx !== 0) this.y = y * TILE_SIZE;
     }
   }
   collisions(entities: Entity[]) {
     const hit_list = [];
+    // Tile collisions
     for (let i = 0; i < entities.length; i++) {
-      const tile = entities[i];
-      if (this.collision(tile)) {
-        hit_list.push(tile);
-      }
+      const entity = entities[i];
+      if (this.collision(entity)) hit_list.push(entity);
+    }
+    // Bomb collisions
+    for (let i = 0; i < $bombs[0].length; i++) {
+      const bomb = $bombs[0][i];
+      if (this.collision(bomb) && !bomb.isOnTop(this)) hit_list.push(bomb);
     }
     return hit_list;
   }

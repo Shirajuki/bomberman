@@ -17,12 +17,15 @@ class Entity {
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
   }
-  collision(other: Entity) {
+  collision(other: Entity, padx = 0, pady = 0) {
+    return this.absoluteCollision(other, this.x, this.y, padx, pady);
+  }
+  absoluteCollision(other: Entity, x: number, y: number, padx = 0, pady = 0) {
     return !(
-      this.y + this.height < other.y ||
-      this.y > other.y + other.height ||
-      this.x + this.width < other.x ||
-      this.x > other.x + other.width
+      y + this.height + pady < other.y ||
+      y - pady > other.y + other.height ||
+      x + this.width + padx < other.x ||
+      x - padx > other.x + other.width
     );
   }
 }
