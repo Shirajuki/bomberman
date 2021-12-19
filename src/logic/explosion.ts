@@ -1,4 +1,5 @@
 import Entity from './entity';
+import { $bombs } from '../state';
 
 class Explosion extends Entity {
   owner: string;
@@ -14,6 +15,7 @@ class Explosion extends Entity {
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
+    for (const bomb of $bombs[0]) if (this.collision(bomb, -1, -1)) bomb.timer = 0;
     this.timer--;
     if (this.timer <= 0) this.dissappear = true;
   }
