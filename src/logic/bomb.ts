@@ -50,15 +50,15 @@ class Bomb extends Entity {
         right: Math.max(this.posx + i, 0),
       };
       // Check for tiling
-      if (map[this.posy][spawnpos.right] === '1') walled.right = true;
+      if (!walled.right && map[this.posy][spawnpos.right] !== '0') walled.right = true;
       else if (!walled.right)
         effects.push(new Explosion(spawnpos.right * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[this.posy][spawnpos.left] === '1') walled.left = true;
+      if (!walled.left && map[this.posy][spawnpos.left] !== '0') walled.left = true;
       else if (!walled.left)
         effects.push(new Explosion(spawnpos.left * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[spawnpos.up][this.posx] === '1') walled.up = true;
+      if (!walled.up && map[spawnpos.up][this.posx] !== '0') walled.up = true;
       else if (!walled.up) effects.push(new Explosion(this.posx * TZ, spawnpos.up * TZ, TZ, TZ, 'blue', this.owner));
-      if (map[spawnpos.down][this.posx] === '1') walled.down = true;
+      if (!walled.down && map[spawnpos.down][this.posx] !== '0') walled.down = true;
       else if (!walled.down)
         effects.push(new Explosion(this.posx * TZ, spawnpos.down * TZ, TZ, TZ, 'blue', this.owner));
     }

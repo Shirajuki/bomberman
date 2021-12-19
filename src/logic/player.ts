@@ -68,13 +68,15 @@ class Player extends Entity {
     const x = Math.round(this.x / TILE_SIZE);
     const y = Math.round(this.y / TILE_SIZE);
     if (map[y + pady][x + padx] === '0') {
-      for (const bomb of $bombs[0]) {
-        if (this.absoluteCollision(bomb, pady !== 0 ? x * TILE_SIZE : this.x, padx !== 0 ? y * TILE_SIZE : this.y))
-          return;
+      if (pady !== 0) {
+        for (const bomb of $bombs[0])
+          if (this.absoluteCollision(bomb, x * this.width, (y + pady) * this.height, -1, -1)) return;
+        this.x = x * TILE_SIZE;
+      } else if (padx !== 0) {
+        for (const bomb of $bombs[0])
+          if (this.absoluteCollision(bomb, (x + padx) * this.width, y * this.height, -1, -1)) return;
+        this.y = y * TILE_SIZE;
       }
-      console.log(pady, padx);
-      if (pady !== 0) this.x = x * TILE_SIZE;
-      else if (padx !== 0) this.y = y * TILE_SIZE;
     }
   }
   collisions(entities: Entity[]) {
