@@ -7,7 +7,7 @@ class Player extends Entity {
   movement = { left: false, up: false, right: false, down: false };
   force = { dx: 0, dy: 0 };
   action = { bomb: false };
-  stats = { power: 1 };
+  stats = { power: 1, speed: 1 };
   speed = 3;
   name = 'Player';
   constructor(x: number, y: number, width: number, height: number, color: string) {
@@ -35,8 +35,9 @@ class Player extends Entity {
       this.action.bomb = false;
       const x = Math.round(this.x / TILE_SIZE) * TILE_SIZE;
       const y = Math.round(this.y / TILE_SIZE) * TILE_SIZE;
+      for (const bomb of $bombs[0]) if (this.absoluteCollision(bomb, x, y, -1, -1)) return;
       console.log('bombing');
-      const bomb = new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'deeppink', 3);
+      const bomb = new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'deeppink', this.stats.power);
       $bombs[0].push(bomb);
     }
   }
