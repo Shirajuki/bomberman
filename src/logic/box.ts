@@ -1,6 +1,7 @@
 import Entity from './entity';
 
 class Box extends Entity {
+  destroyed = false;
   constructor(x: number, y: number, width: number, height: number, color: string) {
     super(x, y, width, height, color);
   }

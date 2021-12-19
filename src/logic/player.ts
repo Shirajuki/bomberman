@@ -19,7 +19,7 @@ class Player extends Entity {
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
   }
-  logic(ctx: CanvasRenderingContext2D, entities: Entity[], dt: number, map: string[]) {
+  logic(ctx: CanvasRenderingContext2D, entities: Entity[], dt: number, map: string[][]) {
     this.draw(ctx);
     // Movements
     this.force.dx = 0;
@@ -41,7 +41,7 @@ class Player extends Entity {
       $bombs[0].push(bomb);
     }
   }
-  move(entities: Entity[], dt: number, map: string[]) {
+  move(entities: Entity[], dt: number, map: string[][]) {
     this.x += this.force.dx * dt;
     let hit_list = this.collisions(entities);
     for (const tile of hit_list) {
@@ -65,7 +65,7 @@ class Player extends Entity {
       }
     }
   }
-  slide(map: string[], padx: number, pady: number) {
+  slide(map: string[][], padx: number, pady: number) {
     const x = Math.round(this.x / TILE_SIZE);
     const y = Math.round(this.y / TILE_SIZE);
     if (map[y + pady][x + padx] === '0') {
