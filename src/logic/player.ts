@@ -79,6 +79,9 @@ class Player extends Entity {
       }
     }
   }
+  hit() {
+    console.log('HIT!');
+  }
   collisions(entities: Entity[]) {
     const hit_list = [];
     // Tile collisions
