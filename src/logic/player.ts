@@ -2,6 +2,7 @@ import Entity from './entity';
 import { TILE_SIZE } from '../constants';
 import Bomb from './bomb';
 import { $bombs } from '../state';
+import { lerp } from '../lib/utils';
 
 class Player extends Entity {
   movement = { left: false, up: false, right: false, down: false };
@@ -65,6 +66,7 @@ class Player extends Entity {
       }
     }
   }
+  // Corner fix
   slide(map: string[][], padx: number, pady: number) {
     const x = Math.round(this.x / TILE_SIZE);
     const y = Math.round(this.y / TILE_SIZE);
@@ -72,11 +74,11 @@ class Player extends Entity {
       if (pady !== 0) {
         for (const bomb of $bombs[0])
           if (this.absoluteCollision(bomb, x * this.width, (y + pady) * this.height, -1, -1)) return;
-        this.x = x * TILE_SIZE;
+        this.x = lerp(this.x, x * TILE_SIZE, 0.3);
       } else if (padx !== 0) {
         for (const bomb of $bombs[0])
           if (this.absoluteCollision(bomb, (x + padx) * this.width, y * this.height, -1, -1)) return;
-        this.y = y * TILE_SIZE;
+        this.y = lerp(this.y, y * TILE_SIZE, 0.3);
       }
     }
   }
@@ -88,22 +90,14 @@ class Player extends Entity {
     // Tile collisions
     for (let i = 0; i < entities.length; i++) {
       const entity = entities[i];
-      if (this.collision(entity)) hit_list.push(entity);
+      if (this.collision(entity, -1, -1)) hit_list.push(entity);
     }
-    // Bomb collisions
+    // Bomb collisions ERROR HERE
     for (let i = 0; i < $bombs[0].length; i++) {
       const bomb = $bombs[0][i];
-      if (this.collision(bomb) && !bomb.isOnTop(this)) hit_list.push(bomb);
+      if (this.collision(bomb, -1, -1) && !bomb.isOnTop(this)) hit_list.push(bomb);
     }
     return hit_list;
-  }
-  collision(entity: Entity) {
-    return (
-      this.x < entity.x + entity.width &&
-      this.x + this.width > entity.x &&
-      this.y < entity.y + entity.height &&
-      this.y + entity.height > entity.y
-    );
   }
 }
 export default Player;
