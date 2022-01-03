@@ -11,7 +11,6 @@ class Player extends Entity {
   stats = { power: 1, speed: 1 };
   speed = 3;
   name = 'Player';
-  sprite = new Image();
   // TODO: Add typing
   animation = {
     padding: { x: 96, y: 96 },

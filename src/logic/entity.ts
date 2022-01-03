@@ -4,6 +4,7 @@ class Entity {
   width: number;
   height: number;
   color: string;
+  sprite = new Image();
   constructor(x: number, y: number, width: number, height: number, color: string) {
     this.x = x;
     this.y = y;
