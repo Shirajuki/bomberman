@@ -11,26 +11,75 @@ class Player extends Entity {
   stats = { power: 1, speed: 1 };
   speed = 3;
   name = 'Player';
+  sprite = new Image();
+  // TODO: Add typing
+  animation = {
+    padding: { x: 96, y: 96 },
+    animations: {
+      down: [1, 0, 2, 0],
+      right: [4, 3, 5, 3],
+      left: [7, 6, 8, 6],
+      up: [10, 9, 11, 9],
+      down_idle: [0],
+      right_idle: [3],
+      left_idle: [6],
+      up_idle: [9],
+    },
+    animationName: 'down_idle',
+    curFrame: 0,
+    frameSpeed: 1,
+    frameCurTimer: 0,
+    frameDuration: 3,
+    direction: 'down',
+  };
   constructor(x: number, y: number, width: number, height: number, color: string) {
     super(x, y, width, height, color);
+    this.sprite.src = '/assets/gfx/player.png';
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
+    if (this.sprite.complete)
+      ctx.drawImage(
+        this.sprite,
+        this.animation.padding.x * this.animation.animations[this.animation.animationName][this.animation.curFrame],
+        this.animation.padding.y * 0,
+        90,
+        90,
+        this.x - 5,
+        this.y - 12,
+        this.width + 10,
+        this.height + 12,
+      );
   }
   logic(ctx: CanvasRenderingContext2D, entities: Entity[], dt: number, map: string[][]) {
     this.draw(ctx);
     // Movements
     this.force.dx = 0;
     this.force.dy = 0;
-    if (this.movement.up) this.force.dy -= this.speed;
-    else if (this.movement.down) this.force.dy += this.speed;
-    else if (this.movement.left) this.force.dx -= this.speed;
-    else if (this.movement.right) this.force.dx += this.speed;
+    if (this.movement.up) {
+      this.force.dy -= this.speed;
+      this.animation.direction = 'up';
+      this.animation.animationName = 'up';
+    } else if (this.movement.down) {
+      this.force.dy += this.speed;
+      this.animation.direction = 'down';
+      this.animation.animationName = 'down';
+    } else if (this.movement.left) {
+      this.force.dx -= this.speed;
+      this.animation.direction = 'left';
+      this.animation.animationName = 'left';
+    } else if (this.movement.right) {
+      this.force.dx += this.speed;
+      this.animation.direction = 'right';
+      this.animation.animationName = 'right';
+    } else {
+      this.animation.animationName = `${this.animation.direction}_idle`;
+    }
     this.move(entities, dt, map);
-
+    this.animate();
     // Bomb logic
     if (this.action.bomb) {
       this.action.bomb = false;
@@ -41,6 +90,14 @@ class Player extends Entity {
       const bomb = new Bomb(x, y, TILE_SIZE, TILE_SIZE, 'deeppink', this.stats.power);
       $bombs[0].push(bomb);
     }
+  }
+  animate() {
+    if (this.animation.frameCurTimer >= this.animation.frameDuration) {
+      this.animation.frameCurTimer = 0;
+      this.animation.curFrame++;
+    } else this.animation.frameCurTimer += this.animation.frameSpeed;
+    if (this.animation.curFrame >= this.animation.animations[this.animation.animationName].length)
+      this.animation.curFrame = 0;
   }
   move(entities: Entity[], dt: number, map: string[][]) {
     this.x += this.force.dx * dt;
