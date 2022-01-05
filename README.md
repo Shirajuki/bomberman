@@ -1,3 +1,17 @@
+<h1 align="center">Bomberman 💣</h1>
+
+<p align="center">
+  <a href="https://github.com/Shirajuki/bomberman/blob/main/LICENSE" alt="LICENSE">
+    <img src="https://img.shields.io/github/license/Shirajuki/bomberman" />
+  </a>
+  <a href="https://github.com/Shirajuki/bomberman/issues" alt="Issues">
+    <img src="https://img.shields.io/github/issues/Shirajuki/bomberman" />
+  </a>
+</p>
+
+A Work In Progress Crazy Arcade, Bomb It and Mr. Boom inspired bomberman TS game 💣
+
+
 # Svelte + TS + Vite
 
 This template should help get you started developing with Svelte and TypeScript in Vite.
