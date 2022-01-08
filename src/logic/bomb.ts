@@ -22,7 +22,7 @@ class Bomb extends Entity {
     curFrame: 0,
     frameSpeed: 1,
     frameCurTimer: 0,
-    frameDuration: 5,
+    frameDuration: 10,
   };
   constructor(x: number, y: number, width: number, height: number, color: string, power: number) {
     super(x, y, width, height, color);
@@ -89,27 +89,57 @@ class Bomb extends Entity {
   explode(effects: Explosion[], map: string[][]) {
     const walled = { up: false, left: false, down: false, right: false };
     const TZ = TILE_SIZE;
+    const MY = map.length;
+    const MX = map[0].length;
     effects.push(new Explosion(this.posx * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner, 'middle'));
     for (let i = 1; i <= this.power; i++) {
       const spawnpos = {
         up: Math.max(this.posy - i, 0),
         left: Math.max(this.posx - i, 0),
-        down: Math.max(this.posy + i, 0),
-        right: Math.max(this.posx + i, 0),
+        down: Math.min(this.posy + i, MY),
+        right: Math.min(this.posx + i, MX),
       };
       // Check for tiling
       if (!walled.right && map[this.posy][spawnpos.right] === '1') walled.right = true;
       else if (!walled.right)
-        this.createExplosion(effects, spawnpos.right * TZ, this.posy * TZ, walled, 'right', i === this.power);
+        this.createExplosion(
+          effects,
+          spawnpos.right * TZ,
+          this.posy * TZ,
+          walled,
+          'right',
+          i === this.power || map[this.posy][spawnpos.right + 1] === '1',
+        );
       if (!walled.left && map[this.posy][spawnpos.left] === '1') walled.left = true;
       else if (!walled.left)
-        this.createExplosion(effects, spawnpos.left * TZ, this.posy * TZ, walled, 'left', i === this.power);
+        this.createExplosion(
+          effects,
+          spawnpos.left * TZ,
+          this.posy * TZ,
+          walled,
+          'left',
+          i === this.power || map[this.posy][Math.max(spawnpos.left - 1, 0)] === '1',
+        );
       if (!walled.up && map[spawnpos.up][this.posx] === '1') walled.up = true;
       else if (!walled.up)
-        this.createExplosion(effects, this.posx * TZ, spawnpos.up * TZ, walled, 'up', i === this.power);
+        this.createExplosion(
+          effects,
+          this.posx * TZ,
+          spawnpos.up * TZ,
+          walled,
+          'up',
+          i === this.power || map[Math.max(spawnpos.up - 1, 0)][this.posx] === '1',
+        );
       if (!walled.down && map[spawnpos.down][this.posx] === '1') walled.down = true;
       else if (!walled.down)
-        this.createExplosion(effects, this.posx * TZ, spawnpos.down * TZ, walled, 'down', i === this.power);
+        this.createExplosion(
+          effects,
+          this.posx * TZ,
+          spawnpos.down * TZ,
+          walled,
+          'down',
+          i === this.power || map[spawnpos.down + 1][this.posx] === '1',
+        );
     }
   }
   isOnTop(player: Player) {

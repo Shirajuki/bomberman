@@ -8,7 +8,7 @@ class Player extends Entity {
   movement = { left: false, up: false, right: false, down: false };
   force = { dx: 0, dy: 0 };
   action = { bomb: false };
-  stats = { power: 1, speed: 1 };
+  stats = { power: 2, speed: 1 };
   speed = 3;
   name = 'Player';
   // TODO: Add typing
@@ -28,7 +28,7 @@ class Player extends Entity {
     curFrame: 0,
     frameSpeed: 1,
     frameCurTimer: 0,
-    frameDuration: 3,
+    frameDuration: 4,
     direction: 'down',
   };
   constructor(x: number, y: number, width: number, height: number, color: string) {

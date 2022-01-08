@@ -12,9 +12,9 @@ class Explosion extends Entity {
     },
     animationName: 'explosion',
     curFrame: 0,
-    frameSpeed: 1,
+    frameSpeed: 4,
     frameCurTimer: 0,
-    frameDuration: 12,
+    frameDuration: 24,
     lockedFrameY: 0,
   };
   constructor(x: number, y: number, width: number, height: number, color: string, owner: string, type: string) {
@@ -44,7 +44,7 @@ class Explosion extends Entity {
     this.animate();
     this.timer--;
     if (this.timer <= 0) this.dissappear = true;
-    if (this.sprite.complete)
+    if (this.sprite.complete && !this.dissappear)
       ctx.drawImage(
         this.sprite,
         this.animation.padding.x * this.animation.animations[this.animation.animationName][this.animation.curFrame],
@@ -56,12 +56,6 @@ class Explosion extends Entity {
         this.width,
         this.height,
       );
-    else {
-      ctx.beginPath();
-      ctx.fillStyle = this.color;
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.fill();
-    }
   }
   animate() {
     if (this.animation.frameCurTimer >= this.animation.frameDuration) {
