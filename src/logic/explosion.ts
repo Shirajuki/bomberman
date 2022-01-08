@@ -1,10 +1,11 @@
 import Entity from './entity';
-import { $players, $bombs } from '../state';
+import { $players, $bombs, $effects } from '../state';
 
 class Explosion extends Entity {
   owner: string;
   timer = 0;
   dissappear = false;
+  type: string;
   animation = {
     padding: { x: 64, y: 64 },
     animations: {
@@ -14,7 +15,7 @@ class Explosion extends Entity {
     curFrame: 0,
     frameSpeed: 4,
     frameCurTimer: 0,
-    frameDuration: 24,
+    frameDuration: 54,
     lockedFrameY: 0,
   };
   constructor(x: number, y: number, width: number, height: number, color: string, owner: string, type: string) {
@@ -22,6 +23,7 @@ class Explosion extends Entity {
     this.owner = owner;
     this.timer = 50;
     this.sprite.src = '/assets/gfx/bomb.png';
+    this.type = type;
     if (type === 'middle') {
       this.animation.lockedFrameY = 1;
     } else if (type === 'left' || type === 'right') {
@@ -39,8 +41,6 @@ class Explosion extends Entity {
     }
   }
   draw(ctx: CanvasRenderingContext2D) {
-    for (const bomb of $bombs[0]) if (this.collision(bomb, -1, -1)) bomb.timer = 0;
-    for (const player of $players[0]) if (this.collision(player, -1, -1)) player.hit();
     this.animate();
     this.timer--;
     if (this.timer <= 0) this.dissappear = true;
@@ -56,6 +56,7 @@ class Explosion extends Entity {
         this.width,
         this.height,
       );
+    for (const player of $players[0]) if (this.collision(player, -1, -1)) player.hit();
   }
   animate() {
     if (this.animation.frameCurTimer >= this.animation.frameDuration) {

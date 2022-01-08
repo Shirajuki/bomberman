@@ -1,6 +1,6 @@
 import Entity from './entity';
 import type Player from './player';
-import { $entities, $players } from '../state';
+import { $bombs, $effects, $entities, $players } from '../state';
 import { TILE_SIZE } from '../constants';
 import Explosion from './explosion';
 import Box from './box';
@@ -24,9 +24,10 @@ class Bomb extends Entity {
     frameCurTimer: 0,
     frameDuration: 10,
   };
+  walled = { up: false, left: false, down: false, right: false };
   constructor(x: number, y: number, width: number, height: number, color: string, power: number) {
     super(x, y, width, height, color);
-    this.timer = 100;
+    this.timer = 150;
     this.power = power;
     this.owner = 'bob';
     this.sprite.src = '/assets/gfx/bomb.png';
@@ -75,19 +76,28 @@ class Bomb extends Entity {
       this.animation.curFrame = 0;
   }
   createExplosion(effects: Explosion[], x: number, y: number, walled: any, pos: string, ending: boolean) {
-    for (const b of $entities[0]) {
-      if (b instanceof Box && this.absoluteCollision(b, x, y, -1, -1)) {
+    for (const box of $entities[0]) {
+      if (box instanceof Box && this.absoluteCollision(box, x, y, -1, -1)) {
         walled[pos] = true;
-        b.destroyed = true;
+        box.destroyed = true;
         break;
       }
     }
+    for (const bomb of $bombs[0])
+      if (this.absoluteCollision(bomb, x, y, -1, -1)) {
+        walled[pos] = true;
+        if (pos === 'left') bomb.walled['right'] = true;
+        else if (pos === 'right') bomb.walled['left'] = true;
+        else if (pos === 'up') bomb.walled['down'] = true;
+        else if (pos === 'down') bomb.walled['up'] = true;
+        bomb.timer = 0;
+        return;
+      }
     if (ending || walled[pos]) pos += '_ending';
     effects.push(new Explosion(x, y, TILE_SIZE, TILE_SIZE, 'blue', this.owner, pos));
   }
-  // Fix duplicate explosions on multiple bombs
   explode(effects: Explosion[], map: string[][]) {
-    const walled = { up: false, left: false, down: false, right: false };
+    const walled = this.walled;
     const TZ = TILE_SIZE;
     const MY = map.length;
     const MX = map[0].length;
