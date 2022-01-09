@@ -1,10 +1,12 @@
-import Entity from './entity';
+import type Entity from './entity';
 import Player from './player';
-import { MAP, TILE_SIZE } from '../constants';
+import { TILE_SIZE } from '../constants';
 import type Bomb from './bomb';
 import type Explosion from './explosion';
 import { $entities, $players, $bombs, $effects } from '../state';
 import Box from './box';
+import type Map from '../maps/maps';
+import SnowMap from '../maps/snow';
 
 class Game {
   state = 0;
@@ -13,6 +15,7 @@ class Game {
   players: Player[] = [];
   bombs: Bomb[] = [];
   effects: Explosion[] = [];
+  mapLogic: Map;
   map: string[][];
   // Framerate independence using timestamps
   dt = 1; // initial value to 1
@@ -20,7 +23,7 @@ class Game {
     this.state = 0;
     this.player = new Player(36, 36, TILE_SIZE, TILE_SIZE, 'red');
     this.players.push(this.player);
-    this.loadMap(MAP);
+    this.loadMap();
 
     // Set global game states
     $entities[0] = this.entities;
@@ -28,21 +31,9 @@ class Game {
     $bombs[0] = this.bombs;
     $effects[0] = this.effects;
   }
-  loadMap(map: string) {
-    this.map = map.split('\n').map((m) => m.split(''));
-    for (let y = 0; y < this.map.length; y++) {
-      for (let x = 0; x < this.map[y].length; x++) {
-        const tile = this.map[y][x];
-        if (tile === '1') {
-          const t = new Entity(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 'green');
-          this.entities.push(t);
-        } else if (tile === '2') {
-          this.map[y][x] = '0';
-          const t = new Box(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 'darkgreen');
-          this.entities.push(t);
-        }
-      }
-    }
+  loadMap() {
+    this.mapLogic = new SnowMap(this);
+    this.mapLogic.setup();
   }
   draw(ctx: CanvasRenderingContext2D) {
     // Entities & tiles loop

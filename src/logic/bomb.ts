@@ -41,12 +41,13 @@ class Bomb extends Entity {
     }
   }
   draw(ctx: CanvasRenderingContext2D) {
+    // Detonation timer
     this.timer--;
     if (this.timer <= 0) this.detonated = true;
-    for (let i = 0; i < $players[0].length; i++) {
-      const p = $players[0][i];
-      if (!this.collision(p, -1, -1)) this.spawnedOnPlayers.splice(i, 1);
-    }
+    // Remove player spawned on check
+    for (let i = 0; i < $players[0].length; i++)
+      if (!this.collision($players[0][i], -1, -1)) this.spawnedOnPlayers.splice(i, 1);
+    // Draw bomb
     this.animate();
     if (this.sprite.complete)
       ctx.drawImage(
@@ -60,12 +61,6 @@ class Bomb extends Entity {
         this.width,
         this.height,
       );
-    else {
-      ctx.beginPath();
-      ctx.fillStyle = this.color;
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.fill();
-    }
   }
   animate() {
     if (this.animation.frameCurTimer >= this.animation.frameDuration) {
@@ -76,6 +71,7 @@ class Bomb extends Entity {
       this.animation.curFrame = 0;
   }
   createExplosion(effects: Explosion[], x: number, y: number, walled: any, pos: string, ending: boolean) {
+    // Box detonation
     for (const box of $entities[0]) {
       if (box instanceof Box && this.absoluteCollision(box, x, y, -1, -1)) {
         walled[pos] = true;
@@ -83,6 +79,7 @@ class Bomb extends Entity {
         break;
       }
     }
+    // Trigger other bombs
     for (const bomb of $bombs[0])
       if (this.absoluteCollision(bomb, x, y, -1, -1)) {
         walled[pos] = true;
@@ -93,6 +90,7 @@ class Bomb extends Entity {
         bomb.timer = 0;
         return;
       }
+    // Ending explosion check
     if (ending || walled[pos]) pos += '_ending';
     effects.push(new Explosion(x, y, TILE_SIZE, TILE_SIZE, 'blue', this.owner, pos));
   }
@@ -101,7 +99,9 @@ class Bomb extends Entity {
     const TZ = TILE_SIZE;
     const MY = map.length;
     const MX = map[0].length;
+    // Create middle explosion
     effects.push(new Explosion(this.posx * TZ, this.posy * TZ, TZ, TZ, 'blue', this.owner, 'middle'));
+    // Loop through 4 directions on each power iteration
     for (let i = 1; i <= this.power; i++) {
       const spawnpos = {
         up: Math.max(this.posy - i, 0),
@@ -109,7 +109,7 @@ class Bomb extends Entity {
         down: Math.min(this.posy + i, MY),
         right: Math.min(this.posx + i, MX),
       };
-      // Check for tiling
+      // Check for tiling on each direction
       if (!walled.right && map[this.posy][spawnpos.right] === '1') walled.right = true;
       else if (!walled.right)
         this.createExplosion(

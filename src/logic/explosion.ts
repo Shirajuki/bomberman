@@ -1,5 +1,5 @@
 import Entity from './entity';
-import { $players, $bombs, $effects } from '../state';
+import { $players } from '../state';
 
 class Explosion extends Entity {
   owner: string;
@@ -23,6 +23,7 @@ class Explosion extends Entity {
     this.owner = owner;
     this.timer = 50;
     this.sprite.src = '/assets/gfx/bomb.png';
+    // Explosion type
     this.type = type;
     if (type === 'middle') {
       this.animation.lockedFrameY = 1;
@@ -41,9 +42,9 @@ class Explosion extends Entity {
     }
   }
   draw(ctx: CanvasRenderingContext2D) {
-    this.animate();
     this.timer--;
     if (this.timer <= 0) this.dissappear = true;
+    this.animate();
     if (this.sprite.complete && !this.dissappear)
       ctx.drawImage(
         this.sprite,
@@ -56,6 +57,7 @@ class Explosion extends Entity {
         this.width,
         this.height,
       );
+    // Player hit collision
     for (const player of $players[0]) if (this.collision(player, -1, -1)) player.hit();
   }
   animate() {
