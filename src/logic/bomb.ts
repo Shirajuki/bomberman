@@ -1,6 +1,6 @@
 import Entity from './entity';
 import type Player from './player';
-import { $bombs, $effects, $entities, $players } from '../state';
+import { $bombs, $entities, $players } from '../state';
 import { TILE_SIZE } from '../constants';
 import Explosion from './explosion';
 import Box from './box';
@@ -110,7 +110,7 @@ class Bomb extends Entity {
         right: Math.min(this.posx + i, MX),
       };
       // Check for tiling on each direction
-      if (!walled.right && map[this.posy][spawnpos.right] === '1') walled.right = true;
+      if (!walled.right && map[this.posy][spawnpos.right] !== '0') walled.right = true;
       else if (!walled.right)
         this.createExplosion(
           effects,
@@ -118,9 +118,9 @@ class Bomb extends Entity {
           this.posy * TZ,
           walled,
           'right',
-          i === this.power || map[this.posy][spawnpos.right + 1] === '1',
+          i === this.power || map[this.posy][spawnpos.right + 1] !== '0',
         );
-      if (!walled.left && map[this.posy][spawnpos.left] === '1') walled.left = true;
+      if (!walled.left && map[this.posy][spawnpos.left] !== '0') walled.left = true;
       else if (!walled.left)
         this.createExplosion(
           effects,
@@ -128,9 +128,9 @@ class Bomb extends Entity {
           this.posy * TZ,
           walled,
           'left',
-          i === this.power || map[this.posy][Math.max(spawnpos.left - 1, 0)] === '1',
+          i === this.power || map[this.posy][Math.max(spawnpos.left - 1, 0)] !== '0',
         );
-      if (!walled.up && map[spawnpos.up][this.posx] === '1') walled.up = true;
+      if (!walled.up && map[spawnpos.up][this.posx] !== '0') walled.up = true;
       else if (!walled.up)
         this.createExplosion(
           effects,
@@ -138,9 +138,9 @@ class Bomb extends Entity {
           spawnpos.up * TZ,
           walled,
           'up',
-          i === this.power || map[Math.max(spawnpos.up - 1, 0)][this.posx] === '1',
+          i === this.power || map[Math.max(spawnpos.up - 1, 0)][this.posx] !== '0',
         );
-      if (!walled.down && map[spawnpos.down][this.posx] === '1') walled.down = true;
+      if (!walled.down && map[spawnpos.down][this.posx] !== '0') walled.down = true;
       else if (!walled.down)
         this.createExplosion(
           effects,
@@ -148,7 +148,7 @@ class Bomb extends Entity {
           spawnpos.down * TZ,
           walled,
           'down',
-          i === this.power || map[spawnpos.down + 1][this.posx] === '1',
+          i === this.power || map[spawnpos.down + 1][this.posx] !== '0',
         );
     }
   }

@@ -1,9 +1,13 @@
-import Tile from './tile';
+import Entity from './entity';
 
-class Box extends Tile {
-  destroyed = false;
+class Tile extends Entity {
+  tileX: number;
+  tileY: number;
   constructor(x: number, y: number, width: number, height: number, tileX: number, tileY: number) {
-    super(x, y, width, height, tileX, tileY);
+    super(x, y, width, height, 'black');
+    this.sprite.src = '/assets/gfx/tiles.png';
+    this.tileX = tileX;
+    this.tileY = tileY;
   }
   draw(ctx: CanvasRenderingContext2D) {
     if (this.sprite.complete)
@@ -16,4 +20,4 @@ class Box extends Tile {
     }
   }
 }
-export default Box;
+export default Tile;

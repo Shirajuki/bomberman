@@ -19,11 +19,11 @@ class Game {
   map: string[][];
   // Framerate independence using timestamps
   dt = 1; // initial value to 1
+  bgctx: CanvasRenderingContext2D;
   constructor() {
     this.state = 0;
     this.player = new Player(36, 36, TILE_SIZE, TILE_SIZE, 'red');
     this.players.push(this.player);
-    this.loadMap();
 
     // Set global game states
     $entities[0] = this.entities;
@@ -31,14 +31,18 @@ class Game {
     $bombs[0] = this.bombs;
     $effects[0] = this.effects;
   }
+  start() {
+    this.loadMap();
+  }
   loadMap() {
     this.mapLogic = new SnowMap(this);
     this.mapLogic.setup();
   }
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, bgctx: CanvasRenderingContext2D) {
     // Entities & tiles loop
     for (let i = this.entities.length - 1; i >= 0; i--) {
-      this.entities[i].draw(ctx);
+      if (this.entities[i] instanceof Box) this.entities[i].draw(ctx);
+      else this.entities[i].draw(bgctx);
       if (this.entities[i] instanceof Box && (this.entities[i] as Box).destroyed) this.entities.splice(i, 1);
     }
     // Bomb
